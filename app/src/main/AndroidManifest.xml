@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Architecture follows AABrowser (https://github.com/kododake/AABrowser):
-  a single distraction-optimized MainActivity is launched by Android Auto
-  as a full-screen car app — not CarAppService + VirtualDisplay templates.
+  Full-screen MainActivity for Android Auto and phone.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 

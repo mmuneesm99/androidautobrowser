@@ -9,8 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.androidautobrowser.browser"
-        // AABrowser targets 35+ for full car Activity projection; 29 still runs
-        // on phone. Prefer Android 15+ phone when testing Android Auto.
+        // targetSdk 35 for current Android Auto APIs; minSdk 29 still runs on phone.
         minSdk = 29
         targetSdk = 35
         versionCode = 2
@@ -43,7 +42,7 @@ android {
 }
 
 dependencies {
-    // Kept for car permission / host compatibility (AABrowser pattern).
+    // Android Auto host compatibility.
     implementation("androidx.car.app:app:1.7.0")
 
     implementation("androidx.core:core-ktx:1.15.0")

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- AABrowser-style: media app, not templated CarAppService. -->
+<!-- Declares Android Auto integration for this app. -->
 <automotiveApp>
     <uses name="media" />
 </automotiveApp>
