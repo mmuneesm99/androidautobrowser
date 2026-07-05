@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">My Browser</string>
+    <string name="ivi_brand_label">Infotainment</string>
+    <string name="ivi_welcome">Welcome</string>
+    <string name="ivi_apps_label">Applications</string>
+    <string name="start_page_greeting">Where to?</string>
+    <string name="start_page_subtitle">Choose an app, or resume where you left off.</string>
+    <string name="start_page_safety">Parked / passenger use only</string>
+    <string name="tab_youtube">YouTube</string>
+    <string name="tab_chrome">Chrome</string>
+    <string name="action_home">Home</string>
+    <string name="action_back">Back</string>
+    <string name="action_exit">Exit</string>
+    <string name="action_forward">Forward</string>
+    <string name="action_reload">Reload</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_resume">Resume last session</string>
+    <string name="action_resume_short">Resume</string>
+    <string name="action_toggle_controls">Show or hide controls</string>
+    <string name="page_loading">Loading…</string>
+    <string name="page_error_title">Couldn\'t load page</string>
+    <string name="page_error_retry">Tap reload to try again</string>
+    <string name="secure_connection">Secure connection</string>
+    <string name="location_loading">Finding location…</string>
+    <string name="location_unavailable">Location unavailable</string>
+    <string name="location_permission_needed">Enable location</string>
+    <string name="location_disabled">Location off</string>
+    <string name="location_coords">%1$.4f, %2$.4f</string>
+
+    <string name="info_dashboard_title">Trip overview</string>
+    <string name="info_weather">Weather</string>
+    <string name="info_vehicle">Vehicle</string>
+    <string name="info_headlines">മലയാളം വാർത്തകൾ</string>
+    <string name="info_weather_alert_label">⚠ കാലാവസ്ഥ അലേർട്ട്</string>
+    <string name="info_weather_alert_live">Live: %1$s</string>
+    <string name="info_weather_loading">Loading weather…</string>
+    <string name="info_weather_unavailable">Weather unavailable</string>
+    <string name="info_temp_format">%1$d°</string>
+    <string name="info_feels_like">Feels like %1$d°</string>
+    <string name="info_weather_meta">Humidity %1$d%%  ·  Wind %2$d km/h</string>
+    <string name="info_battery_format">Phone battery %1$d%%</string>
+    <string name="info_battery_unknown">Phone battery —</string>
+    <string name="info_news_loading">• വാർത്തകൾ ലോഡ് ചെയ്യുന്നു…</string>
+    <string name="info_news_unavailable">• വാർത്തകൾ ലഭ്യമല്ല</string>
+    <string name="info_news_item">• %1$s</string>
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="greeting_night">Good night</string>
+
+    <string-array name="driving_tips">
+        <item>Keep a safe following distance in traffic.</item>
+        <item>Check mirrors before every lane change.</item>
+        <item>Rest if you feel drowsy — safety first.</item>
+        <item>Use indicators early so others can react.</item>
+        <item>Slow down in rain and on wet roads.</item>
+        <item>Parked use only for video and browsing.</item>
+        <item>Secure loose items before you drive.</item>
+    </string-array>
+</resources>

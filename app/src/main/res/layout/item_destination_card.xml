@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/card_height"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/bg_glass_strong"
+    app:cardCornerRadius="32dp"
+    app:cardElevation="0dp"
+    app:rippleColor="#40FFFFFF"
+    app:strokeColor="@color/stroke_subtle"
+    app:strokeWidth="1dp"
+    tools:layout_width="160dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <FrameLayout
+            android:id="@+id/cardIconBg"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:background="@drawable/bg_icon_circle_youtube">
+
+            <ImageView
+                android:id="@+id/cardIcon"
+                android:layout_width="@dimen/card_icon_size"
+                android:layout_height="@dimen/card_icon_size"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                tools:src="@drawable/ic_youtube" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/cardTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:letterSpacing="0.02"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="YouTube" />
+
+        <TextView
+            android:id="@+id/cardHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp"
+            tools:text="Watch videos" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_primary">#05060A</color>
+    <color name="bg_surface">#0C0E14</color>
+    <color name="bg_elevated">#141820</color>
+    <color name="bg_glass">#B3141820</color>
+    <color name="bg_glass_strong">#CC1A2030</color>
+    <color name="stroke_subtle">#33FFFFFF</color>
+    <color name="stroke_glow">#40A8C5FF</color>
+
+    <color name="text_primary">#F4F7FB</color>
+    <color name="text_secondary">#9AA3B5</color>
+    <color name="text_muted">#6B7385</color>
+    <color name="text_accent">#C8D4FF</color>
+
+    <color name="accent_youtube">#FF2B3A</color>
+    <color name="accent_music">#FF4D6D</color>
+    <color name="accent_chrome">#5B9DFF</color>
+    <color name="accent_idle">#1C2230</color>
+    <color name="accent_ambient">#1A3A6B</color>
+
+    <color name="progress">#5B9DFF</color>
+</resources>

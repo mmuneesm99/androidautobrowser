@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_height">210dp</dimen>
+    <dimen name="ivi_clock_size">80sp</dimen>
+    <dimen name="start_page_padding">32dp</dimen>
+</resources>

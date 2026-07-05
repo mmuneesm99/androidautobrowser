@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <TextView
+            android:id="@+id/infoGreeting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#B3FFFFFF"
+            android:textSize="13sp"
+            android:letterSpacing="0.08"
+            android:textAllCaps="true"
+            tools:text="Good evening" />
+
+        <TextView
+            android:id="@+id/infoTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/info_dashboard_title"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <!-- Important weather updates from latest news -->
+        <LinearLayout
+            android:id="@+id/infoWeatherAlert"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_weather_alert"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/info_weather_alert_label"
+                android:textAllCaps="true"
+                android:textColor="#FFE082"
+                android:textSize="11sp"
+                android:letterSpacing="0.08"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/infoWeatherAlertText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="കേരളത്തിൽ ശക്തമായ മഴയ്ക്ക് സാധ്യത" />
+
+            <TextView
+                android:id="@+id/infoWeatherAlertSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="#E6FFFFFF"
+                android:textSize="12sp"
+                android:visibility="gone"
+                tools:text="IMD issues orange alert"
+                tools:visibility="visible" />
+        </LinearLayout>
+
+        <!-- Weather block -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_info_panel"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/info_weather"
+                android:textAllCaps="true"
+                android:textColor="#99FFFFFF"
+                android:textSize="11sp"
+                android:letterSpacing="0.1" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/infoTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="42sp"
+                    android:textStyle="bold"
+                    tools:text="28°" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/infoCondition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        tools:text="Partly cloudy" />
+
+                    <TextView
+                        android:id="@+id/infoFeelsLike"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="#B3FFFFFF"
+                        android:textSize="13sp"
+                        tools:text="Feels like 30°" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/infoWeatherMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#B3FFFFFF"
+                android:textSize="13sp"
+                tools:text="Humidity 65%  ·  Wind 12 km/h" />
+
+            <TextView
+                android:id="@+id/infoPlace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:drawablePadding="6dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#D9FFFFFF"
+                android:textSize="13sp"
+                tools:text="Chennai, Tamil Nadu" />
+        </LinearLayout>
+
+        <!-- Vehicle / tip block -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_info_panel"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/info_vehicle"
+                android:textAllCaps="true"
+                android:textColor="#99FFFFFF"
+                android:textSize="11sp"
+                android:letterSpacing="0.1" />
+
+            <TextView
+                android:id="@+id/infoBattery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                tools:text="Phone battery 82%" />
+
+            <TextView
+                android:id="@+id/infoTip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="#D9FFFFFF"
+                android:textSize="13sp"
+                tools:text="Keep a safe following distance in traffic." />
+        </LinearLayout>
+
+        <!-- Headlines -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_info_panel"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/info_headlines"
+                android:textAllCaps="true"
+                android:textColor="#99FFFFFF"
+                android:textSize="11sp"
+                android:letterSpacing="0.1" />
+
+            <TextView
+                android:id="@+id/infoNews1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                tools:text="• Headline one" />
+
+            <TextView
+                android:id="@+id/infoNews2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                tools:text="• Headline two" />
+
+            <TextView
+                android:id="@+id/infoNews3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                tools:text="• Headline three" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
