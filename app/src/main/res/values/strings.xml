@@ -18,6 +18,16 @@
     <string name="action_resume">Resume last session</string>
     <string name="action_resume_short">Resume</string>
     <string name="action_toggle_controls">Show or hide controls</string>
+    <string name="action_mirror">Mirror</string>
+    <string name="action_mirror_stop">Stop mirror</string>
+    <string name="mirror_waiting">Unlock your phone and allow screen capture. This view is watch-only.</string>
+    <string name="mirror_live">Phone screen · view only</string>
+    <string name="mirror_denied">Screen capture was not allowed</string>
+    <string name="mirror_open_on_phone">Open My Browser on your phone and tap Mirror</string>
+    <string name="mirror_look_at_car">Capture allowed. The car screen shows your phone. Taps there do not control it.</string>
+    <string name="mirror_channel">Screen mirror</string>
+    <string name="mirror_notification_title">Mirroring phone to car</string>
+    <string name="mirror_notification_text">The car can see your phone screen. Taps on the car do not control the phone.</string>
     <string name="page_loading">Loading…</string>
     <string name="page_error_title">Couldn\'t load page</string>
     <string name="page_error_retry">Tap reload to try again</string>

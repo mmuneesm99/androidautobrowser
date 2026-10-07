@@ -2,15 +2,21 @@ package com.androidautobrowser.browser
 
 import android.Manifest
 import android.animation.ObjectAnimator
+import android.app.ActivityOptions
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.Location
 import android.net.Uri
 import android.os.BatteryManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Display
 import android.view.MotionEvent
+import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
@@ -19,6 +25,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +33,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.androidautobrowser.browser.info.InfoDashboardLoader
 import com.androidautobrowser.browser.location.LocationStatusHelper
+import com.androidautobrowser.browser.mirror.BrowserSync
+import com.androidautobrowser.browser.mirror.MirrorController
+import com.androidautobrowser.browser.mirror.MirrorPermissionActivity
+import com.androidautobrowser.browser.mirror.ScreenMirrorService
 import com.androidautobrowser.browser.web.BrowserWebViewFactory
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import java.text.DateFormat
@@ -64,7 +75,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statusLocation: TextView
     private lateinit var locationRow: View
     private lateinit var tileChrome: View
+    private lateinit var tileMirror: View
+    private lateinit var tileMirrorLabel: TextView
     private lateinit var tileResume: View
+    private lateinit var mirrorOverlay: View
+    private lateinit var mirrorSurface: android.view.SurfaceView
+    private lateinit var mirrorStatus: TextView
+    private lateinit var btnStopMirror: ImageButton
 
     private lateinit var infoGreeting: TextView
     private lateinit var infoTemp: TextView
@@ -88,6 +105,7 @@ class MainActivity : AppCompatActivity() {
 
     private var currentDestination: BrowserDestination = BrowserDestination.DEFAULT
     private var currentUrl: String = ""
+    private var mirrorRequested = false
     private var isLoading: Boolean = false
     private var customView: View? = null
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
@@ -109,6 +127,46 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var locationHelper: LocationStatusHelper
 
+    private val urlSyncReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val url = intent?.getStringExtra(BrowserSync.EXTRA_URL) ?: return
+            val fromDisplay = intent.getIntExtra(BrowserSync.EXTRA_DISPLAY, currentDisplayId())
+            if (fromDisplay == currentDisplayId()) return
+            applyRemoteUrl(url)
+        }
+    }
+
+    private val mirrorListener: (MirrorController.State) -> Unit = { state ->
+        when (state) {
+            MirrorController.State.ACTIVE -> {
+                mirrorRequested = !isPhoneDisplay()
+                if (isPhoneDisplay()) {
+                    Toast.makeText(this, R.string.mirror_look_at_car, Toast.LENGTH_LONG).show()
+                }
+            }
+            MirrorController.State.IDLE -> mirrorRequested = false
+            MirrorController.State.DENIED -> {
+                if (isPhoneDisplay()) {
+                    Toast.makeText(this, R.string.mirror_denied, Toast.LENGTH_LONG).show()
+                    mirrorRequested = false
+                }
+            }
+        }
+        refreshMirrorUi()
+        updateMirrorTile()
+    }
+
+    private val mirrorConsentLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        val data = result.data
+        if (result.resultCode == RESULT_OK && data != null) {
+            ScreenMirrorService.start(this, result.resultCode, data)
+        } else {
+            MirrorController.onDenied()
+        }
+    }
+
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
     ) { grants ->
@@ -129,18 +187,21 @@ class MainActivity : AppCompatActivity() {
         setupInfoDashboard()
         setupLocationStatus()
         setupLandingTiles()
+        setupMirror()
         setupWebView()
         setupControls()
         updateResumeButton()
         updateClock()
         showStartPage()
         requestLocationIfNeeded()
+        consumePendingSync()
 
         onBackPressedDispatcher.addCallback(
             this,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     when {
+                        mirrorOverlay.isVisible -> stopMirror()
                         customView != null -> exitFullscreen()
                         startPageRoot.isVisible -> {
                             isEnabled = false
@@ -177,7 +238,13 @@ class MainActivity : AppCompatActivity() {
         statusLocation = findViewById(R.id.statusLocation)
         locationRow = findViewById(R.id.locationRow)
         tileChrome = findViewById(R.id.tileChrome)
+        tileMirror = findViewById(R.id.tileMirror)
+        tileMirrorLabel = findViewById(R.id.tileMirrorLabel)
         tileResume = findViewById(R.id.tileResume)
+        mirrorOverlay = findViewById(R.id.mirrorOverlay)
+        mirrorSurface = findViewById(R.id.mirrorSurface)
+        mirrorStatus = findViewById(R.id.mirrorStatus)
+        btnStopMirror = findViewById(R.id.btnStopMirror)
         infoGreeting = findViewById(R.id.infoGreeting)
         infoTemp = findViewById(R.id.infoTemp)
         infoCondition = findViewById(R.id.infoCondition)
@@ -408,6 +475,10 @@ class MainActivity : AppCompatActivity() {
             pulse(tileChrome)
             open(BrowserDestination.CHROME)
         }
+        tileMirror.setOnClickListener {
+            pulse(tileMirror)
+            onMirrorClicked()
+        }
         tileResume.setOnClickListener {
             pulse(tileResume)
             val last = prefs.getString(KEY_LAST_URL, null)
@@ -428,9 +499,10 @@ class MainActivity : AppCompatActivity() {
                 },
                 onUrl = { url ->
                     currentUrl = url.orEmpty()
-                    if (!url.isNullOrBlank() && url != "about:blank") {
+                    if (url != null && BrowserSync.isSyncable(url)) {
                         currentDestination = destinationForUrl(url)
                         prefs.edit().putString(KEY_LAST_URL, url).apply()
+                        BrowserSync.publish(this@MainActivity, url, currentDisplayId())
                         highlightActiveApp()
                     }
                     updateAddressBar(url)
@@ -675,6 +747,145 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupMirror() {
+        mirrorSurface.holder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceCreated(holder: SurfaceHolder) {
+                attachMirrorSurface(holder)
+            }
+
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+                attachMirrorSurface(holder)
+            }
+
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                MirrorController.clearConsumer(holder.surface)
+            }
+        })
+        btnStopMirror.setOnClickListener { stopMirror() }
+    }
+
+    private fun attachMirrorSurface(holder: SurfaceHolder) {
+        if (isPhoneDisplay() || !mirrorOverlay.isVisible) return
+        val frame = holder.surfaceFrame
+        if (frame.width() < 16 || frame.height() < 16) return
+        MirrorController.setConsumer(
+            holder.surface,
+            frame.width(),
+            frame.height(),
+            resources.displayMetrics.densityDpi,
+        )
+    }
+
+    private fun onMirrorClicked() {
+        if (MirrorController.state == MirrorController.State.ACTIVE) {
+            stopMirror()
+            return
+        }
+        if (isPhoneDisplay()) {
+            mirrorConsentLauncher.launch(ScreenMirrorService.createConsentIntent(this))
+            return
+        }
+        mirrorRequested = true
+        refreshMirrorUi()
+        val options = ActivityOptions.makeBasic().apply {
+            launchDisplayId = Display.DEFAULT_DISPLAY
+        }
+        try {
+            startActivity(
+                Intent(this, MirrorPermissionActivity::class.java).addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK,
+                ),
+                options.toBundle(),
+            )
+        } catch (error: RuntimeException) {
+            mirrorStatus.setText(R.string.mirror_open_on_phone)
+        }
+    }
+
+    private fun stopMirror() {
+        mirrorRequested = false
+        ScreenMirrorService.stop(this)
+        refreshMirrorUi()
+        updateMirrorTile()
+    }
+
+    private fun refreshMirrorUi() {
+        val showOnCar = !isPhoneDisplay() &&
+            (mirrorRequested || MirrorController.state == MirrorController.State.ACTIVE)
+        mirrorOverlay.isVisible = showOnCar
+        if (!showOnCar) {
+            if (::webView.isInitialized &&
+                lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)
+            ) {
+                webView.onResume()
+            }
+            return
+        }
+        mirrorStatus.setText(
+            when (MirrorController.state) {
+                MirrorController.State.ACTIVE -> R.string.mirror_live
+                MirrorController.State.DENIED -> R.string.mirror_denied
+                MirrorController.State.IDLE -> R.string.mirror_waiting
+            },
+        )
+        mirrorSurface.holder.let { holder ->
+            if (holder.surface?.isValid == true) attachMirrorSurface(holder)
+        }
+        webView.onPause()
+    }
+
+    private fun updateMirrorTile() {
+        tileMirrorLabel.setText(
+            if (MirrorController.state == MirrorController.State.ACTIVE) {
+                R.string.action_mirror_stop
+            } else {
+                R.string.action_mirror
+            },
+        )
+    }
+
+    private fun applyRemoteUrl(url: String) {
+        if (!BrowserSync.isSyncable(url)) return
+        if (mirrorOverlay.isVisible) return
+        if (url == currentUrl && !startPageRoot.isVisible) return
+        openUrl(url)
+    }
+
+    private fun consumePendingSync() {
+        val url = BrowserSync.recentFromOtherDisplay(this, currentDisplayId()) ?: return
+        applyRemoteUrl(url)
+    }
+
+    private fun currentDisplayId(): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            display?.displayId ?: Display.DEFAULT_DISPLAY
+        } else {
+            @Suppress("DEPRECATION")
+            windowManager.defaultDisplay.displayId
+        }
+    }
+
+    private fun isPhoneDisplay(): Boolean = currentDisplayId() == Display.DEFAULT_DISPLAY
+
+    override fun onStart() {
+        super.onStart()
+        ContextCompat.registerReceiver(
+            this,
+            urlSyncReceiver,
+            IntentFilter(BrowserSync.ACTION),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+        MirrorController.addListener(mirrorListener)
+        refreshMirrorUi()
+        updateMirrorTile()
+    }
+
+    override fun onStop() {
+        MirrorController.removeListener(mirrorListener)
+        unregisterReceiver(urlSyncReceiver)
+        super.onStop()
+    }
+
     override fun onPause() {
         handler.removeCallbacks(clockRunnable)
         locationHelper.stop()
@@ -696,12 +907,16 @@ class MainActivity : AppCompatActivity() {
             loadHeadlines()
             loadWeatherAlerts()
         }
+        refreshMirrorUi()
     }
 
     override fun onDestroy() {
         handler.removeCallbacks(hideControlsRunnable)
         handler.removeCallbacks(clockRunnable)
         locationHelper.destroy()
+        if (::mirrorSurface.isInitialized) {
+            MirrorController.clearConsumer(mirrorSurface.holder.surface)
+        }
         exitFullscreen()
         (webView.parent as? ViewGroup)?.removeView(webView)
         webView.destroy()
